@@ -10,7 +10,7 @@ import {
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {Formik} from "formik";
 import * as yup from "yup";
-import {json, useNavigate} from "react-router-dom";
+import {Navigate, json, useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {setLogin} from "state";
 import Dropzone from "react-dropzone";
@@ -76,13 +76,24 @@ const Form = () => {
   const login = async (values, onSubmitProps) => {
     const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: json,
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(values),
     });
+    const LoggedIn = await loggedInResponse.json();
+    if (LoggedIn) {
+      dispatch(
+        setLogin({
+          user: LoggedIn.user,
+          token: LoggedIn.user,
+        }),
+      );
+      Navigate("/HomePage");
+    }
   };
   const handleFormSubmit = async (values, onSubmitProps) => {
     //if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
+    onSubmitProps.resetForm();
   };
 
   return (
